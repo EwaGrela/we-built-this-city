@@ -30,7 +30,7 @@ def home():
 
 @app.route("/counter")
 def counter():
-	visit = session.query(Visit).filter(Visit.visit_id==1).one_or_none()
+	visit = session.query(Visit).filter(Visit.visit_id==1).with_for_update(nowait=True, of=Visit).first()
 	if visit is None:
 		visit = Visit(visit_id=1, counter=1)
 		session.add(visit)
@@ -54,30 +54,33 @@ def get_city():
 	cn = request.args.get('country_name')
 	lim = request.args.get('per_page')
 	offs = request.args.get('page')
-	all_cities = session.query(City)
+	all_cities = session.query(City).order_by(City.city)
 	if cn is None:
 		if lim is None and offs is None:
-			cities = all_cities.order_by(City.city).all()
+			cities = all_cities.all()
 		elif lim is not None and offs is None:
-			cities = all_cities.order_by(City.city).limit(int(lim)).all()
+			cities = all_cities.limit(int(lim)).all()
 		elif lim is not None and offs is not None:
-			cities = all_cities.order_by(City.city).limit(int(lim)).offset((int(offs)-1)*int(lim)).all()
+			cities = all_cities.limit(int(lim)).offset((int(offs)-1)*int(lim)).all()
 	else:
 		country = session.query(Country)
 		my_country = country.filter(Country.country==cn).one()
 		country_id = my_country.country_id
+		country_cities = all_cities.filter(City.country_id==country_id)
 		if lim is None and offs is None:
-			cities = all_cities.order_by(City.city).filter(City.country_id==country_id).all()
+			cities = country_cities.all()
 		elif lim is not None and offs is None:
-			cities = all_cities.order_by(City.city).filter(City.country_id==country_id).limit(int(lim)).all()
+			cities = country_cities.limit(int(lim)).all()
 		elif lim is not None and offs is not None:
-			cities = all_cities.order_by(City.city).filter(City.country_id==country_id).limit(int(lim)).offset((int(offs)-1)*int(lim)).all()
+			cities = country_cities.limit(int(lim)).offset((int(offs)-1)*int(lim)).all()
+			cc = [city.city for city in cities]
 	c = [city.city for city in cities]
+	print(c, len(c))
 	return jsonify(c)
 
 def post_city():
 	data = request.get_json()
-	cities = session.query(City).all() # to po to, by sprawdzać, jak się dodały
+	cities = session.query(City).all()
 	countries = session.query(Country).all()
 	c = [city.city for city in cities]
 	country_ids = sorted([country.country_id for country in countries])

@@ -8,6 +8,7 @@ itsdangerous==0.24
 Jinja2==2.10
 MarkupSafe==1.0
 psycopg2==2.7.4
+psycopg2-binary==2.7.4
 PyYAML==3.12
 SQLAlchemy==1.2.6
 ua-parser==0.7.3

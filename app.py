@@ -31,7 +31,7 @@ def home():
 
 @app.route("/counter")
 def counter():
-	visit = session.query(Visit).filter(Visit.visit_id==1).with_for_update(nowait=True, of=Visit).first()
+	visit = session.query(Visit).filter(Visit.visit_id==1).with_for_update(nowait=False, of=Visit).first()
 	if visit is None:
 		visit = Visit(visit_id=1, counter=1)
 		session.add(visit)

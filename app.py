@@ -18,8 +18,6 @@ from datetime import datetime
 import os
 
 
-#os.environ['DATABASE_URL']
-# engine =create_engine('postgres://hwfontyrjvhwuz:410dd886164ee538d1df30879bd63e481636b3e6ae88724b9fcc3eaab98c0ef9@ec2-54-195-246-59.eu-west-1.compute.amazonaws.com:5432/d5trn498dlkaff')
 engine =create_engine(os.environ['DATABASE_URL'])
 Session = sessionmaker(bind=engine)
 session = Session()

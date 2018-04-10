@@ -15,9 +15,12 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from sqlalchemy.sql import collate
 from datetime import datetime
+import os
 
 
-engine =create_engine('postgres://hwfontyrjvhwuz:410dd886164ee538d1df30879bd63e481636b3e6ae88724b9fcc3eaab98c0ef9@ec2-54-195-246-59.eu-west-1.compute.amazonaws.com:5432/d5trn498dlkaff')
+#os.environ['DATABASE_URL']
+# engine =create_engine('postgres://hwfontyrjvhwuz:410dd886164ee538d1df30879bd63e481636b3e6ae88724b9fcc3eaab98c0ef9@ec2-54-195-246-59.eu-west-1.compute.amazonaws.com:5432/d5trn498dlkaff')
+engine =create_engine(os.environ['DATABASE_URL'])
 Session = sessionmaker(bind=engine)
 session = Session()
 
@@ -37,7 +40,7 @@ def counter():
 		session.commit()
 		return str(visit.counter)
 	else:
-		visit.counter +=1;
+		visit.counter +=1
 		session.commit()
 		return str(visit.counter)
 	
@@ -73,9 +76,7 @@ def get_city():
 			cities = country_cities.limit(int(lim)).all()
 		elif lim is not None and offs is not None:
 			cities = country_cities.limit(int(lim)).offset((int(offs)-1)*int(lim)).all()
-			cc = [city.city for city in cities]
 	c = [city.city for city in cities]
-	print(c, len(c))
 	return jsonify(c)
 
 def post_city():
